@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi production orale 10e — « La lecture et nous »</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- HTML2Canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* Effet miroir pour la vidéo */
+        .video-mirror {
+            transform: scaleX(-1);
+        }
+        /* Animation fade-in simple */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 pb-20 min-h-screen flex flex-col">
+
+    <!-- HEADER -->
+    <header class="bg-indigo-700 text-white p-6 shadow-lg">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Suivi production orale 10e — « La lecture et nous »</h1>
+            <p class="opacity-90 text-sm md:text-base">Préparez vos arguments, structurez votre pensée et enregistrez votre performance.</p>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="max-w-5xl mx-auto mt-6 px-4 w-full">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button id="btn-tab-prep" onclick="switchTab('preparation')" class="flex items-center justify-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-all bg-white text-indigo-700 border-t-4 border-indigo-700 shadow-sm">
+                <i data-lucide="file-text" width="20"></i>
+                Préparation de la production orale
+            </button>
+            <button id="btn-tab-rec" onclick="handleSave()" class="flex items-center justify-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-all bg-slate-200 text-slate-600 hover:bg-slate-300">
+                <i data-lucide="video" width="20"></i>
+                Enregistrement et récapitulatif
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto bg-white shadow-xl min-h-[600px] rounded-b-lg rounded-tr-lg p-4 md:p-8 w-full flex-grow">
+        
+        <!-- ONGLET 1 : PRÉPARATION -->
+        <div id="tab-preparation" class="space-y-8 fade-in">
+            
+            <!-- 1. Consigne Générale -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg shadow-sm">
+                <div class="flex items-start gap-4">
+                    <div class="bg-blue-100 p-2 rounded-full hidden md:block">
+                        <i data-lucide="check-circle" class="text-blue-600" width="24"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-blue-800 mb-3">Consigne Générale</h2>
+                        <p class="mb-2">Vous allez faire une vidéo d’environ <strong>3 minutes</strong> dans laquelle vous présenterez le thème que vous avez choisi de manière générale.</p>
+                        <p class="mb-4">Dans cette vidéo, vous devrez répondre aux questions suivantes en parlant des éléments suivants :</p>
+                        <ul class="list-disc list-inside space-y-1 ml-2 text-slate-700 bg-white/50 p-4 rounded-lg border border-blue-100">
+                            <li>Premier argument <strong>pour</strong> et un exemple</li>
+                            <li>Premier argument <strong>contre</strong> et un exemple</li>
+                            <li>Deuxième argument <strong>pour</strong> et un exemple</li>
+                            <li>Deuxième argument <strong>contre</strong> et un exemple</li>
+                            <li>Troisième argument <strong>pour</strong> et un exemple</li>
+                            <li>Troisième argument <strong>contre</strong> et un exemple</li>
+                        </ul>
+                        <div class="mt-4 text-sm text-blue-900 bg-blue-100/50 p-3 rounded">
+                            <strong>Important :</strong> Vous devrez utiliser certaines structures grammaticales et le vocabulaire travaillés en classe (le conditionnel, le subjonctif, les connecteurs logiques, ainsi que d’autres temps verbaux).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Choix du Thème -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="book-open" class="text-indigo-600"></i>
+                    Choisis ton thème en cliquant sur l’un des boutons ci-dessous :
+                </h3>
+                <div id="themes-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    <!-- Les boutons seront générés par JS -->
+                </div>
+            </div>
+
+            <!-- 3. Zone de travail (Cachée par défaut tant que pas de thème) -->
+            <div id="work-area" class="mt-8 space-y-6 border-t pt-8 hidden">
+                <div class="bg-indigo-50 p-4 rounded-lg text-center border border-indigo-100">
+                    <span class="uppercase text-xs font-bold text-indigo-400 tracking-wider">Thème sélectionné</span>
+                    <h2 id="display-theme-title" class="text-2xl font-bold text-indigo-800 mt-1"></h2>
+                </div>
+
+                <div id="questions-container" class="space-y-6">
+                    <!-- Les champs de texte seront générés par JS -->
+                </div>
+
+                <!-- 4. Bouton Sauvegarde -->
+                <div class="flex justify-center pt-6">
+                    <button onclick="handleSave()" class="flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg text-lg font-bold shadow-lg transform transition hover:scale-105">
+                        <i data-lucide="save" width="24"></i>
+                        Sauvegarder mes réponses
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ONGLET 2 : ENREGISTREMENT & RÉCAPITULATIF -->
+        <div id="tab-recording" class="space-y-10 fade-in hidden">
+            
+            <!-- 1. Tableau Récapitulatif -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-end border-b pb-2">
+                    <h2 class="text-2xl font-bold text-slate-800">Fiche de préparation</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600">Nom</label>
+                        <input type="text" id="input-nom" placeholder="Votre nom" oninput="updateSummaryHeader()" class="w-full mt-1 p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600">Prénom</label>
+                        <input type="text" id="input-prenom" placeholder="Votre prénom" oninput="updateSummaryHeader()" class="w-full mt-1 p-2 border rounded">
+                    </div>
+                </div>
+
+                <!-- Zone capturée -->
+                <div id="summary-content" class="bg-white border-2 border-slate-800 p-8 rounded-none shadow-none text-slate-900">
+                    <div class="mb-6 border-b-2 border-slate-800 pb-4">
+                        <h1 class="text-xl font-bold uppercase tracking-wide">Fiche Récapitulative : La lecture et nous</h1>
+                        <p class="text-lg mt-2">Étudiant(e) : <span id="summary-student-name" class="font-mono font-bold">...</span></p>
+                        <p class="text-lg">Thème : <span id="summary-theme-title" class="font-bold text-indigo-700">Aucun thème sélectionné</span></p>
+                    </div>
+
+                    <div id="summary-answers" class="space-y-4">
+                        <!-- Réponses injectées par JS -->
+                    </div>
+                </div>
+
+                <!-- 2. Bouton Capture -->
+                <div class="flex justify-end">
+                    <button onclick="downloadImage()" class="flex items-center gap-2 bg-slate-700 hover:bg-slate-800 text-white px-5 py-2 rounded shadow transition-colors">
+                        <i data-lucide="image" width="18"></i>
+                        Télécharger mes réponses en image
+                    </button>
+                </div>
+            </div>
+
+            <hr class="border-slate-200">
+
+            <!-- 3. Zone d'enregistrement vidéo -->
+            <div class="space-y-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold flex items-center justify-center gap-2 text-red-600">
+                        <i data-lucide="camera" width="28"></i>
+                        Studio d'enregistrement
+                    </h2>
+                    <p class="text-slate-500">Enregistre ta présentation de 3 minutes.</p>
+                </div>
+
+                <div class="bg-black rounded-lg overflow-hidden aspect-video relative shadow-2xl max-w-3xl mx-auto">
+                    <!-- Vidéo preview (Webcam) -->
+                    <video id="video-preview" autoplay muted class="w-full h-full object-cover video-mirror"></video>
+                    <!-- Vidéo replay (Enregistrement) -->
+                    <video id="video-replay" controls class="w-full h-full object-cover hidden"></video>
+                    
+                    <div id="recording-indicator" class="hidden absolute top-4 right-4 flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-full animate-pulse text-sm font-bold">
+                        <div class="w-3 h-3 bg-white rounded-full"></div>
+                        ENREGISTREMENT
+                    </div>
+                </div>
+
+                <!-- Contrôles Vidéo -->
+                <div class="flex flex-wrap justify-center gap-4" id="video-controls">
+                    <!-- Boutons injectés par JS selon l'état -->
+                    <button id="btn-start" onclick="startRecording()" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full text-lg font-bold shadow-lg transition-transform hover:scale-105">
+                        <i data-lucide="mic" width="24"></i> Enregistrer la vidéo
+                    </button>
+                    
+                    <button id="btn-pause" onclick="pauseRecording()" class="hidden flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full font-bold shadow">
+                        <i data-lucide="pause" width="24"></i> Pause
+                    </button>
+                    
+                    <button id="btn-resume" onclick="resumeRecording()" class="hidden flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-bold shadow">
+                        <i data-lucide="play" width="24"></i> Reprendre
+                    </button>
+
+                    <button id="btn-stop" onclick="stopRecording()" class="hidden flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-full font-bold shadow">
+                        <div class="w-4 h-4 bg-white rounded-sm"></div> Terminer
+                    </button>
+
+                    <button id="btn-reset" onclick="resetVideo()" class="hidden flex items-center gap-2 bg-slate-500 hover:bg-slate-600 text-white px-6 py-3 rounded-full font-bold shadow">
+                        <i data-lucide="rotate-ccw" width="20"></i> Refaire la vidéo
+                    </button>
+
+                    <button id="btn-download" onclick="downloadVideo()" class="hidden flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full font-bold shadow-lg animate-bounce">
+                        <i data-lucide="download" width="24"></i> Télécharger la vidéo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    
+    <footer class="max-w-5xl mx-auto mt-8 text-center text-slate-400 text-sm w-full">
+        <p>© Classe de 10e — Production Orale.</p>
+    </footer>
+
+    <!-- SCRIPT LOGIQUE -->
+    <script>
+        // --- DONNÉES ---
+        const themes = [
+            "Livre papier vs liseuse numérique",
+            "Lire le livre avant de voir le film",
+            "L’abandon d’un livre ennuyeux",
+            "Les classiques sont-ils dépassés ?",
+            "Lire des bandes dessinées (BD/Mangas)",
+            "Lire la fin d’un livre en premier",
+            "Le livre audio est-il une vraie lecture ?",
+            "L’école doit-elle imposer les lectures ?",
+            "Prêter ses livres à des amis",
+            "L’intelligence artificielle pour écrire des romans"
+        ];
+
+        const questionsStructure = [
+            { id: 'presentation', label: "Présentation générale du thème choisi", placeholder: "Explique brièvement de quoi tu vas parler..." },
+            { id: 'arg1_for', label: "Premier argument POUR + exemple", placeholder: "Ton premier argument positif et son exemple concret..." },
+            { id: 'arg1_against', label: "Premier argument CONTRE + exemple", placeholder: "Ton premier contre-argument et son exemple..." },
+            { id: 'arg2_for', label: "Deuxième argument POUR + exemple", placeholder: "Ton deuxième argument positif..." },
+            { id: 'arg2_against', label: "Deuxième argument CONTRE + exemple", placeholder: "Ton deuxième contre-argument..." },
+            { id: 'arg3_for', label: "Troisième argument POUR + exemple", placeholder: "Ton dernier argument positif..." },
+            { id: 'arg3_against', label: "Troisième argument CONTRE + exemple", placeholder: "Ton dernier contre-argument..." },
+            { id: 'conclusion', label: "Conclusion générale", placeholder: "Pour conclure, ton avis final..." },
+        ];
+
+        let selectedTheme = "";
+        let mediaRecorder;
+        let recordedChunks = [];
+        let videoUrl = null;
+        let stream = null;
+        let isPaused = false;
+
+        // --- INITIALISATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderThemes();
+            renderQuestions();
+        });
+
+        // --- RENDU DYNAMIQUE ---
+        function renderThemes() {
+            const container = document.getElementById('themes-container');
+            container.innerHTML = themes.map(theme => `
+                <button onclick="selectTheme('${theme.replace(/'/g, "\\'")}')" 
+                    class="theme-btn p-3 text-sm rounded-lg border transition-all text-center h-full flex items-center justify-center bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:border-indigo-300"
+                    data-theme="${theme}">
+                    ${theme}
+                </button>
+            `).join('');
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = questionsStructure.map(q => `
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 hover:border-indigo-300 transition-colors">
+                    <label for="${q.id}" class="block font-semibold text-slate-700 mb-2">${q.label}</label>
+                    <textarea id="${q.id}" name="${q.id}" rows="3" placeholder="${q.placeholder}"
+                        class="w-full p-3 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-shadow"
+                    ></textarea>
+                </div>
+            `).join('');
+        }
+
+        // --- GESTION DES ONGLETS & THÈMES ---
+
+        function selectTheme(theme) {
+            selectedTheme = theme;
+            document.getElementById('display-theme-title').innerText = theme;
+            document.getElementById('work-area').classList.remove('hidden');
+
+            // Mise à jour visuelle des boutons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if(btn.getAttribute('data-theme') === theme) {
+                    btn.className = "theme-btn p-3 text-sm rounded-lg border transition-all text-center h-full flex items-center justify-center bg-indigo-600 text-white border-indigo-700 shadow-md transform scale-105";
+                } else {
+                    btn.className = "theme-btn p-3 text-sm rounded-lg border transition-all text-center h-full flex items-center justify-center bg-white text-slate-600 border-slate-200 hover:bg-indigo-50 hover:border-indigo-300";
+                }
+            });
+        }
+
+        function switchTab(tab) {
+            const tabPrep = document.getElementById('tab-preparation');
+            const tabRec = document.getElementById('tab-recording');
+            const btnPrep = document.getElementById('btn-tab-prep');
+            const btnRec = document.getElementById('btn-tab-rec');
+
+            if (tab === 'preparation') {
+                tabPrep.classList.remove('hidden');
+                tabRec.classList.add('hidden');
+                
+                // Styles boutons
+                btnPrep.className = "flex items-center justify-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-all bg-white text-indigo-700 border-t-4 border-indigo-700 shadow-sm";
+                btnRec.className = "flex items-center justify-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-all bg-slate-200 text-slate-600 hover:bg-slate-300";
+                
+                // Arrêt caméra si on quitte l'onglet enregistrement
+                stopCameraStream();
+
+            } else {
+                tabPrep.classList.add('hidden');
+                tabRec.classList.remove('hidden');
+
+                // Styles boutons
+                btnRec.className = "flex items-center justify-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-all bg-white text-indigo-700 border-t-4 border-indigo-700 shadow-sm";
+                btnPrep.className = "flex items-center justify-center gap-2 px-6 py-3 rounded-t-lg font-semibold transition-all bg-slate-200 text-slate-600 hover:bg-slate-300";
+
+                updateSummary();
+                initCamera();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleSave() {
+            if (!selectedTheme) {
+                alert("N'oublie pas de choisir un thème !");
+                return;
+            }
+            switchTab('recording');
+        }
+
+        // --- GESTION DU RÉCAPITULATIF ---
+
+        function updateSummaryHeader() {
+            const nom = document.getElementById('input-nom').value || '';
+            const prenom = document.getElementById('input-prenom').value || '';
+            document.getElementById('summary-student-name').innerText = (prenom + ' ' + nom).trim() || '...';
+        }
+
+        function updateSummary() {
+            document.getElementById('summary-theme-title').innerText = selectedTheme || "Aucun thème sélectionné";
+            updateSummaryHeader();
+
+            const container = document.getElementById('summary-answers');
+            container.innerHTML = questionsStructure.map(q => {
+                const val = document.getElementById(q.id).value;
+                return `
+                <div class="border-b border-slate-300 pb-3 break-inside-avoid">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase mb-1">${q.label}</h4>
+                    <p class="text-base whitespace-pre-wrap font-medium">${val || "..."}</p>
+                </div>`;
+            }).join('');
+        }
+
+        function downloadImage() {
+            const element = document.getElementById('summary-content');
+            const nom = document.getElementById('input-nom').value || 'Eleve';
+            
+            html2canvas(element, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Prepa_Orale_${nom}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+            }).catch(err => {
+                console.error(err);
+                alert("Erreur lors de la génération de l'image.");
+            });
+        }
+
+        // --- GESTION VIDÉO ---
+
+        async function initCamera() {
+            const preview = document.getElementById('video-preview');
+            const replay = document.getElementById('video-replay');
+            
+            // Si on a déjà une vidéo enregistrée, on ne relance pas la caméra
+            if (videoUrl) {
+                preview.classList.add('hidden');
+                replay.classList.remove('hidden');
+                return;
+            }
+
+            replay.classList.add('hidden');
+            preview.classList.remove('hidden');
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                preview.srcObject = stream;
+            } catch (err) {
+                console.error("Erreur caméra:", err);
+                alert("Impossible d'accéder à la caméra.");
+            }
+        }
+
+        function stopCameraStream() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        function startRecording() {
+            if (!stream) return;
+            recordedChunks = [];
+            
+            mediaRecorder = new MediaRecorder(stream);
+            
+            mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) recordedChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                videoUrl = URL.createObjectURL(blob);
+                
+                // UI: Montrer le replay
+                const preview = document.getElementById('video-preview');
+                const replay = document.getElementById('video-replay');
+                
+                preview.classList.add('hidden');
+                replay.src = videoUrl;
+                replay.classList.remove('hidden');
+                
+                stopCameraStream(); // Libérer la caméra
+                updateVideoControls('stopped');
+            };
+
+            mediaRecorder.start();
+            updateVideoControls('recording');
+        }
+
+        function pauseRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.pause();
+                updateVideoControls('paused');
+            }
+        }
+
+        function resumeRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'paused') {
+                mediaRecorder.resume();
+                updateVideoControls('recording');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+            }
+        }
+
+        function resetVideo() {
+            videoUrl = null;
+            recordedChunks = [];
+            const replay = document.getElementById('video-replay');
+            replay.src = "";
+            updateVideoControls('idle');
+            initCamera(); // Relancer la caméra
+        }
+
+        function downloadVideo() {
+            if (videoUrl) {
+                const nom = document.getElementById('input-nom').value || 'Eleve';
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = videoUrl;
+                a.download = `Production_Orale_${nom}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(videoUrl);
+            }
+        }
+
+        function updateVideoControls(status) {
+            const btnStart = document.getElementById('btn-start');
+            const btnPause = document.getElementById('btn-pause');
+            const btnResume = document.getElementById('btn-resume');
+            const btnStop = document.getElementById('btn-stop');
+            const btnReset = document.getElementById('btn-reset');
+            const btnDownload = document.getElementById('btn-download');
+            const indicator = document.getElementById('recording-indicator');
+
+            // Cacher tout d'abord
+            [btnStart, btnPause, btnResume, btnStop, btnReset, btnDownload, indicator].forEach(el => el.classList.add('hidden'));
+
+            if (status === 'idle') {
+                btnStart.classList.remove('hidden');
+            } else if (status === 'recording') {
+                btnPause.classList.remove('hidden');
+                btnStop.classList.remove('hidden');
+                indicator.classList.remove('hidden');
+            } else if (status === 'paused') {
+                btnResume.classList.remove('hidden');
+                btnStop.classList.remove('hidden');
+            } else if (status === 'stopped') {
+                btnReset.classList.remove('hidden');
+                btnDownload.classList.remove('hidden');
+            }
+        }
+
+    </script>
+</body>
+</html>
