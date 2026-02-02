@@ -32,8 +32,12 @@
 <body class="bg-slate-50 font-sans text-slate-800 pb-20 min-h-screen flex flex-col">
 
     <!-- HEADER -->
-    <header class="bg-indigo-700 text-white p-6 shadow-lg">
-        <div class="max-w-6xl mx-auto text-center">
+    <header class="bg-indigo-700 text-white p-6 shadow-lg relative overflow-hidden">
+        <!-- Image de fond subtile pour le header -->
+        <div class="absolute inset-0 opacity-10">
+            <img src="https://images.unsplash.com/photo-1507842217121-9e9f1929c5f7?q=80&w=2070&auto=format&fit=crop" alt="Bibliothèque fond" class="w-full h-full object-cover">
+        </div>
+        <div class="max-w-6xl mx-auto text-center relative z-10">
             <h1 class="text-3xl md:text-4xl font-bold mb-2">Suivi production orale 10e — « La lecture et nous »</h1>
             <p class="opacity-90 text-sm md:text-base">Préparez vos arguments, structurez votre pensée et enregistrez votre performance.</p>
         </div>
@@ -55,22 +59,59 @@
 
     <main class="max-w-7xl mx-auto bg-white shadow-xl min-h-[600px] rounded-b-lg rounded-tr-lg p-4 md:p-8 w-full flex-grow">
         
+        <!-- BANNIÈRE VISUELLE LIVRES -->
+        <div class="w-full h-48 rounded-lg overflow-hidden mb-8 shadow-md relative group">
+            <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1200&q=80" 
+                 alt="Livres bibliothèque" 
+                 class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                <h2 class="text-white text-2xl font-bold drop-shadow-md">Espace de travail et de réflexion</h2>
+            </div>
+        </div>
+
         <!-- ONGLET 1 : PRÉPARATION -->
         <div id="tab-preparation" class="space-y-8 fade-in">
             
-            <!-- 0. IDENTIFICATION -->
+            <!-- 0. IDENTIFICATION (BINÔME) -->
             <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
                 <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                    <i data-lucide="user" class="text-indigo-600"></i> Identification
+                    <i data-lucide="users" class="text-indigo-600"></i> Identification (Binôme)
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600">Nom</label>
-                        <input type="text" id="input-nom" placeholder="Votre nom" class="w-full mt-1 p-3 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- ÉLÈVE 1 -->
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 class="font-bold text-indigo-800 mb-3 flex items-center gap-2">
+                            <span class="bg-indigo-100 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full text-xs">1</span>
+                            Élève 1
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nom</label>
+                                <input type="text" id="input-nom-1" placeholder="Nom élève 1" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Prénom</label>
+                                <input type="text" id="input-prenom-1" placeholder="Prénom élève 1" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-600">Prénom</label>
-                        <input type="text" id="input-prenom" placeholder="Votre prénom" class="w-full mt-1 p-3 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none">
+
+                    <!-- ÉLÈVE 2 -->
+                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                        <h4 class="font-bold text-indigo-800 mb-3 flex items-center gap-2">
+                            <span class="bg-indigo-100 text-indigo-700 w-6 h-6 flex items-center justify-center rounded-full text-xs">2</span>
+                            Élève 2 (Optionnel)
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nom</label>
+                                <input type="text" id="input-nom-2" placeholder="Nom élève 2" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Prénom</label>
+                                <input type="text" id="input-prenom-2" placeholder="Prénom élève 2" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -135,7 +176,8 @@
         <!-- ONGLET 2 : ENREGISTREMENT & RÉCAPITULATIF -->
         <div id="tab-recording" class="hidden fade-in">
             
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+            <!-- Layout 2 colonnes : MD pour tablettes et ordinateurs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 
                 <!-- COLONNE GAUCHE : RÉCAPITULATIF -->
                 <div class="space-y-4">
@@ -148,9 +190,14 @@
                     <!-- Zone capturée -->
                     <div id="summary-content" class="bg-white border-2 border-slate-800 p-8 rounded-none shadow-sm text-slate-900">
                         <div class="mb-6 border-b-2 border-slate-800 pb-4">
-                            <h1 class="text-xl font-bold uppercase tracking-wide">Fiche Récapitulative : La lecture et nous</h1>
-                            <p class="text-lg mt-2">Étudiant(e) : <span id="summary-student-name" class="font-mono font-bold">...</span></p>
-                            <p class="text-lg">Thème : <span id="summary-theme-title" class="font-bold text-indigo-700">Aucun thème sélectionné</span></p>
+                            <h1 class="text-xl font-bold uppercase tracking-wide">Fiche Récapitulative</h1>
+                            <div class="mt-4 flex gap-4">
+                                <img src="https://cdn-icons-png.flaticon.com/512/3389/3389081.png" alt="Icone livre" class="w-16 h-16 opacity-80">
+                                <div>
+                                    <p class="text-lg">Thème : <span id="summary-theme-title" class="font-bold text-indigo-700">Aucun thème sélectionné</span></p>
+                                    <p class="text-base text-slate-600 mt-1">Étudiants : <span id="summary-student-name" class="font-mono font-bold text-black">...</span></p>
+                                </div>
+                            </div>
                         </div>
 
                         <div id="summary-answers" class="space-y-4 text-sm md:text-base">
@@ -222,7 +269,7 @@
         </div>
     </main>
     
-    <footer class="max-w-6xl mx-auto mt-8 text-center text-slate-400 text-sm w-full">
+    <footer class="max-w-7xl mx-auto mt-8 text-center text-slate-400 text-sm w-full">
         <p>© Classe de 10e — Production Orale.</p>
     </footer>
 
@@ -350,9 +397,20 @@
         // --- GESTION DU RÉCAPITULATIF ---
 
         function updateSummaryHeader() {
-            const nom = document.getElementById('input-nom').value || '';
-            const prenom = document.getElementById('input-prenom').value || '';
-            document.getElementById('summary-student-name').innerText = (prenom + ' ' + nom).trim() || '...';
+            const nom1 = document.getElementById('input-nom-1').value || '';
+            const prenom1 = document.getElementById('input-prenom-1').value || '';
+            const nom2 = document.getElementById('input-nom-2').value || '';
+            const prenom2 = document.getElementById('input-prenom-2').value || '';
+            
+            let text = (prenom1 + ' ' + nom1).trim();
+            if (nom2 || prenom2) {
+                // Si le deuxième élève est renseigné, on l'ajoute
+                const text2 = (prenom2 + ' ' + nom2).trim();
+                if (text && text2) text += " & ";
+                text += text2;
+            }
+
+            document.getElementById('summary-student-name').innerText = text || '...';
         }
 
         function updateSummary() {
@@ -372,11 +430,11 @@
 
         function downloadImage() {
             const element = document.getElementById('summary-content');
-            const nom = document.getElementById('input-nom').value || 'Eleve';
+            const nom1 = document.getElementById('input-nom-1').value || 'Eleves';
             
             html2canvas(element, { backgroundColor: "#ffffff", scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Prepa_Orale_${nom}.jpg`;
+                link.download = `Prepa_Orale_${nom1}.jpg`;
                 link.href = canvas.toDataURL('image/jpeg');
                 link.click();
             }).catch(err => {
@@ -478,7 +536,7 @@
 
         function downloadVideo() {
             if (videoUrl) {
-                const nom = document.getElementById('input-nom').value || 'Eleve';
+                const nom = document.getElementById('input-nom-1').value || 'Eleve';
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = videoUrl;
